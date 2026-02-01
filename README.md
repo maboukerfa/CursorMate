@@ -1,8 +1,29 @@
-# CursorMate - AI Text Assistant
+<div align="center">
+<a href="https://github.com/imadbourouche/CursorMate"><img src="assets/icons/icon128.png"/></a>
+</div>
+<h1 align="center">CursorMate</h1>
 
-CursorMate is a powerful Chrome extension that brings AI capabilities directly to your text selection. Select any text on a webpage and instantly get explanations, summaries, translations, or custom AI responses using your preferred AI model.
+<div align="center">
+<strong>CursorMate is a Chrome extension that brings AI capabilities directly to your text selection. Select any text on a webpage and instantly get explanations, summaries, translations, or custom AI responses using your preferred AI model.</strong>
+</div>
+<br>
 
-![Extension Icon](assets/icons/icon128.png)
+<div align="center">
+    <img src="assets/demo/cursor-mate-view.png" alt="View" width="420"/>
+</div>
+
+## Demo
+
+<div align="center">
+    <h3>Summarize text</h3>
+    <img src="assets/demo/summarize.gif" alt="Summarize demo" width="420" style="margin-right:12px;"/>
+</div>
+
+<div align="center">
+    <h3>Respond to an email</h3>
+    <img src="assets/demo/respond_email.gif" alt="Respond demo" width="420"/>
+</div>
+
 
 ## Features
 
@@ -14,23 +35,18 @@ CursorMate is a powerful Chrome extension that brings AI capabilities directly t
     - **Immediate Popup**: Opens the AI panel instantly upon selection.
     - **Manual Mode**: Activates only when you click the extension icon in the toolbar.
 - **📝 Multiline Input**: Ask follow-up questions or provide custom instructions.
-- **✨ Premium UI**: Clean, modern interface with glassmorphism effects and smooth animations.
 
 ## Installation
 
 1.  Clone or download this repository.
-2.  **Setup Configuration**:
-    - Navigate to `src/utils/`.
-    - Copy `config.example.js` to `config.js`.
-    - (Optional) Edit `config.js` to set your default API keys for local development. This file is git-ignored to keep your secrets safe.
 3.  Open Chrome and navigate to `chrome://extensions/`.
 4.  Enable **Developer mode** in the top-right corner.
 5.  Click **Load unpacked**.
 6.  Select the `CursorMate` folder.
+7.  update your model configuration in the extension settings.
 
 ## Usage
-
-1.  **Select text** on any webpage.
+1. **Select text** on any webpage.
 2.  Depending on your settings:
     - Click the **floating icon** that appears.
     - Or wait for the **popup** to open automatically.
@@ -39,9 +55,15 @@ CursorMate is a powerful Chrome extension that brings AI capabilities directly t
 4.  View the streaming AI response.
 5.  **Copy** the response.
 
+
 ## Configuration
 
-Click the **"EXTENSION OPTIONS"** link in the popup (or right-click the extension icon and select "Options") to access the Settings page.
+Click the **"EXTENSION OPTIONS"** link in the popup (or right-click the extension icon and select "Settings") to access the Settings page.
+
+### Extension Behavior
+- **Show Floating Icon** (Default): Displays a small icon near the selection.
+- **Show Popup Immediately**: Skips the icon and opens the panel right away.
+- **Manual Trigger Only**: Keeps the UI hidden until you explicitly click the extension icon.
 
 ### Model Configuration
 - **Model Name**: The ID of the model you want to use (e.g., `deepseek-chat`, `gpt-4o`).
@@ -49,17 +71,12 @@ Click the **"EXTENSION OPTIONS"** link in the popup (or right-click the extensio
 - **API Key**: Your secret API key.
 > **Note**: These settings are stored locally in your browser (`chrome.storage.sync`) and are never sent to any third-party server other than the API URL you specify.
 
-### Manage Actions
+### Manage Actions (Predefined & Custom prompts)
 - **Add New Action**: Create custom actions with a Name, Emoji, and Prompt.
     - Use `{text}` as a placeholder for the selected text in your prompt.
     - Example: `Translate this to Spanish: {text}`
 - **Emoji Picker**: Use the built-in picker to find the perfect emoji for your action.
 - **Remove Actions**: Delete any actions you don't need.
-
-### Extension Behavior
-- **Show Floating Icon** (Default): Displays a small icon near the selection.
-- **Show Popup Immediately**: Skips the icon and opens the panel right away.
-- **Manual Trigger Only**: Keeps the UI hidden until you explicitly click the extension icon.
 
 ## Tech Stack
 
@@ -67,4 +84,3 @@ Click the **"EXTENSION OPTIONS"** link in the popup (or right-click the extensio
 - **Generic Model Support**: Compatible with any OpenAI-format API.
 - **Vanilla JS & CSS**: Lightweight and fast, with no heavy framework dependencies.
 - **Chrome Storage**: Syncs your settings and custom actions across devices.
-
