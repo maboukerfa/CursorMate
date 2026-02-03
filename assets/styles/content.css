@@ -171,6 +171,17 @@
   background: #f9f9f9;
   padding: 8px;
   border-radius: 4px;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+#stream-output.clickable {
+  cursor: pointer;
+  background: #f3e8ff;
+}
+
+#stream-output.clickable:hover {
+  background: #e9d5ff;
+  box-shadow: 0 0 0 2px #a855f7;
 }
 
 .response-actions {

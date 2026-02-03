@@ -9,10 +9,13 @@ export class PopupManager {
         this.element = null;
         this.callbacks = callbacks || {}; // { onClose, onReplace }
         this._dragCleanup = null;
+        this._selectionContext = null; // Stores input field selection info for replacement
     }
 
-    async show(anchorRect, selectedText, useBottom = false) {
+    async show(anchorRect, selectedText, useBottom = false, selectionContext = null) {
         if (this.element) return; // Already open
+
+        this._selectionContext = selectionContext;
 
         this.element = document.createElement('div');
         this.element.className = 'text-selection-popup';
@@ -149,19 +152,57 @@ export class PopupManager {
         const outputElement = document.getElementById('stream-output');
         const copyBtn = document.getElementById('btn-copy-response');
 
-
         if (responseArea) responseArea.style.display = 'block';
         if (outputElement) outputElement.textContent = "Thinking...";
         if (copyBtn) copyBtn.style.display = 'none';
 
+        // Check if we have a valid input selection context for replacement
+        const canReplace = this._selectionContext && this._selectionContext.type === 'input';
+
+        // Create replace callback if we have a valid input selection context
+        const doReplace = (responseText) => {
+            const ctx = this._selectionContext;
+            if (ctx && ctx.element && document.body.contains(ctx.element)) {
+                const input = ctx.element;
+                const before = input.value.substring(0, ctx.start);
+                const after = input.value.substring(ctx.end);
+                input.value = before + responseText + after;
+
+                // Set cursor position after the inserted text
+                const newCursorPos = ctx.start + responseText.length;
+                input.setSelectionRange(newCursorPos, newCursorPos);
+                input.focus();
+
+                // Dispatch input event to trigger any listeners
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        };
+
         chrome.storage.sync.get(['systemPrompt'], async (result) => {
             let systemPrompt = result.systemPrompt || DEFAULT_SYSTEM_PROMPT;
             const userPrompt = constructUserPrompt(actionType, selectedText, customPrompt, dynamicPrompt);
-    
+
             await handleModelRequest(systemPrompt, userPrompt, outputElement, copyBtn, {
                 onUpdate: () => {
                     const contentDiv = this.element.querySelector('.popup-content');
                     if (contentDiv) contentDiv.scrollTop = contentDiv.scrollHeight;
+                },
+                onComplete: (fullResponseText) => {
+                    // Make the output clickable if we can replace
+                    if (canReplace && outputElement) {
+                        outputElement.classList.add('clickable');
+                        outputElement.title = 'Click to replace selected text';
+
+                        // Add click handler
+                        outputElement.onclick = () => {
+                            doReplace(fullResponseText);
+                            // Visual feedback
+                            outputElement.style.opacity = '0.5';
+                            setTimeout(() => {
+                                outputElement.style.opacity = '1';
+                            }, 300);
+                        };
+                    }
                 }
             });
         });

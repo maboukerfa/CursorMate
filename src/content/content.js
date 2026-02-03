@@ -2,6 +2,7 @@
 let floatingIcon = null;
 let popupManager = null;
 let selectedText = '';
+let selectionContext = null; // Stores info about input field selection for replacement
 
 // --- Dynamic Import & Initialization ---
 (async () => {
@@ -59,8 +60,37 @@ function handleTextSelection(e) {
     return;
   }
 
-  const selection = window.getSelection();
-  const text = selection.toString().trim();
+  const activeElement = document.activeElement;
+  const isInputField = activeElement &&
+    (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.isContentEditable);
+
+  let text = '';
+
+  // Check if selection is in an input/textarea
+  if (isInputField && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+    const start = activeElement.selectionStart;
+    const end = activeElement.selectionEnd;
+    if (start !== end) {
+      text = activeElement.value.substring(start, end).trim();
+      // Store context for replacement
+      selectionContext = {
+        type: 'input',
+        element: activeElement,
+        start: start,
+        end: end
+      };
+    }
+  } else {
+    // Regular text selection on page
+    const selection = window.getSelection();
+    text = selection.toString().trim();
+    if (text.length > 0 && selection.rangeCount > 0) {
+      selectionContext = {
+        type: 'page',
+        range: selection.getRangeAt(0).cloneRange()
+      };
+    }
+  }
 
   // 2. If text is selected, check behavior setting
   if (text.length > 0) {
@@ -81,7 +111,8 @@ function handleTextSelection(e) {
     });
 
   } else {
-    // Text deselected
+    // Text deselected - clear context
+    selectionContext = null;
   }
 }
 
@@ -127,5 +158,5 @@ function showPopup() {
   const iconRect = floatingIcon.getBoundingClientRect();
   if (!iconRect) return; // Should not happen if showFloatingIcon was called
 
-  popupManager.show(iconRect, selectedText);
+  popupManager.show(iconRect, selectedText, false, selectionContext);
 }

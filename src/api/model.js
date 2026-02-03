@@ -20,7 +20,7 @@ export async function handleModelRequest(systemPrompt, userPrompt, outputElement
             outputElement.innerHTML = marked.parse(fullResponseText);
             if (callbacks.onUpdate) callbacks.onUpdate();
         } else if (msg.type === "done") {
-            // Show buttons
+            // Show copy button
             if (copyBtn) {
                 copyBtn.style.display = 'inline-block';
                 copyBtn.onclick = () => {
@@ -29,6 +29,10 @@ export async function handleModelRequest(systemPrompt, userPrompt, outputElement
                     copyBtn.textContent = "Copied!";
                     setTimeout(() => copyBtn.textContent = originalText, 2000);
                 };
+            }
+            // Call onComplete with the full response text
+            if (callbacks.onComplete) {
+                callbacks.onComplete(fullResponseText);
             }
             port.disconnect();
         } else if (msg.type === "error") {
